@@ -66,6 +66,31 @@ userRouter.get('/users', async (req, res) => {
       res.status(500).send({ error: error.message });
     }
   });
+
+  userRouter.post('/users/:id/friends', async (req, res) => {
+    const { userId } = req.params;
+    const { friendId } = req.body;
+  
+    try {
+      const senderUser = await UserModel.findById(userId);
+      const receiverUser = await UserModel.findById(friendId);
+  
+      if (!senderUser || !receiverUser) {
+        return res.status(400).json({ error: 'User not found' });
+      }
+  
+      if (senderUser.friends.includes(friendId) || senderUser.friendRequests.includes(friendId)) {
+        return res.status(201).send({ error:"You are already friends" });
+      }
+  
+      senderUser.friendRequests.push(friendId);
+      await sender.save();
+  
+      res.status(201).send({ message: "Friend request has been sent" });
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
   
 module.exports={
     userRouter
