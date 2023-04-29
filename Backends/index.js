@@ -13,10 +13,6 @@ app.get("/", (req, res) => {
   res.send("Hello World, welcome Social Media App....!!!!!!");
 });
 
-app.use("/user");
-
-app.use("/api")
-
 app.listen(process.env.port, async()=>{
     try{
         await connection;
