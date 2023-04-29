@@ -7,7 +7,7 @@ const { UserModel } = require('../models/user.model');
 const userRouter = express.Router();
 
 userRouter.post("/register", async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, dob, bio } = req.body;
 
     try {
         const userAlready = await UserModel.findOne({ email });
@@ -21,7 +21,9 @@ userRouter.post("/register", async (req, res) => {
                     const newUser = new UserModel({
                         name,
                         email,
-                        password: hash
+                        password: hash,
+                        dob,
+                        bio
                     });
                     await newUser.save();
                     res.status(201).send({ "msg": "User registered successfully", "user": newUser })
@@ -43,6 +45,28 @@ userRouter.get('/users', async (req, res) => {
     }
   });
 
+
+  userRouter.get('/users/:id/friends', async (req, res) => {
+    const { id } = req.params;
+  
+    try {
+      const user = await UserModel.findById(id).populate('friends');
+      
+      if (!user) {
+        return res.status(400).send({ error: 'User not found' });
+      }
+  
+      const friends = user.friends.map((friend) => {
+        const { _id, name, email } = friend;
+        return { _id, name, email };
+      });
+  
+      res.status(200).send(friends);
+    } catch (error) {
+      res.status(500).send({ error: error.message });
+    }
+  });
+  
 module.exports={
     userRouter
 }
