@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 require('dotenv').config();
-const { userModel } = require('../models/user.model');
+const { UserModel } = require('../models/user.model');
 
 const userRouter = express.Router();
 
@@ -10,7 +10,7 @@ userRouter.post("/register", async (req, res) => {
     const { name, email, password } = req.body;
 
     try {
-        const userAlready = await userModel.findOne({ email });
+        const userAlready = await UserModel.findOne({ email });
         if (userAlready) {
             res.status(200).send({ "msg": "user already exists", "user": userAlready })
         } else {
@@ -18,7 +18,7 @@ userRouter.post("/register", async (req, res) => {
                 if (err) {
                     res.status(400).send({ "msg": "Something went wrong" })
                 } else {
-                    const newUser = new userModel({
+                    const newUser = new UserModel({
                         name,
                         email,
                         password: hash
@@ -33,6 +33,15 @@ userRouter.post("/register", async (req, res) => {
         console.log(error.message)
     }
 });
+
+userRouter.get('/users', async (req, res) => {
+    try {
+      const users = await UserModel.find();
+      res.send(users);
+    } catch (error) {
+      res.status(400).send({ error: error.message });
+    }
+  });
 
 module.exports={
     userRouter
