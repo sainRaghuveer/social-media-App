@@ -24,7 +24,7 @@ userRouter.post("/register", async (req, res) => {
                         password: hash
                     });
                     await newUser.save();
-                    res.status(200).send({ "msg": "User registered successfully", "user": newUser })
+                    res.status(201).send({ "msg": "User registered successfully", "user": newUser })
                 }
             });
         }
@@ -37,7 +37,7 @@ userRouter.post("/register", async (req, res) => {
 userRouter.get('/users', async (req, res) => {
     try {
       const users = await UserModel.find();
-      res.send(users);
+      res.status(200).send(users);
     } catch (error) {
       res.status(400).send({ error: error.message });
     }
